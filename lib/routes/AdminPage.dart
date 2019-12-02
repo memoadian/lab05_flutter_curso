@@ -15,8 +15,10 @@ class AdminPage extends StatefulWidget{
 }
 
 class AdminPageState extends State<AdminPage>{
+  //declaramos la variable helper  
   final dbHelper = FavHelper();
-  List<Fav> _favs = new List();
+  //lista de Fav
+  List<Fav> _favs = List();
   //declaramos la variable que guardará la lista de elementos
   List<Pet> _pets = List<Pet>();
   //declaramos variable de tipo shared preference
@@ -28,7 +30,7 @@ class AdminPageState extends State<AdminPage>{
   void initState() {
     super.initState();
     getPets();//traer mascotas
-    getFavs();
+    getFavs();//traer los favoritos
     _loadColor();//cargar color
   }
 
@@ -42,11 +44,15 @@ class AdminPageState extends State<AdminPage>{
     });
   }
 
+  //traer los pets favoritos
   void getFavs() {
-    dbHelper.getAllFavs().then((dogs) {
+    //obtenemos todos los elementos
+    dbHelper.getAllFavs().then((favs) {
+      //seteamos el resultado en el estado
       setState(() {
-        dogs.forEach((dog) {
-          _favs.add(Fav.fromMap(dog));
+        favs.forEach((fav) {//recorremos el array obtenido
+          //y lo agregamos al array existente dinámico
+          _favs.add(Fav.fromMap(fav));//mapeando con la funcion fromMap
         });
       });
     });
@@ -130,9 +136,22 @@ class AdminPageState extends State<AdminPage>{
     return Card(//card
       margin: EdgeInsets.all(5.0),//margen
       child: ListTile(//Listile para ordenar
-        title: Text('Amigo'),//titulo
-        subtitle: Text('Edad: 0 años'),//subtitulo
-        leading: Image.asset('images/logo_flutter.png'),//icono
+        title: Text(_favs[position].name),//titulo
+        subtitle: Text('Edad: ${_favs[position].age} años'),//subtitulo
+        leading: Column(//creamos una columna para contener la imagen
+          children: <Widget>[//array
+            Padding(padding: EdgeInsets.all(0)),//padding
+            ClipRRect(//haremos que la imagen tenga borde redondeado
+              //al 100% para que sea circular
+              borderRadius: new BorderRadius.circular(100.0),
+              child: Image.network(//imagen de internet
+                  _favs[position].image,//propiedad imagen
+                  height: 50.0,//alto
+                  width: 50.0,//ancho
+              ),
+            )
+          ],
+        ),
         trailing: Row(//Row para acomodar iconos al final
           mainAxisSize: MainAxisSize.min,//ordenamiento horizontal
           children: <Widget>[//array
@@ -149,7 +168,8 @@ class AdminPageState extends State<AdminPage>{
             ),
             IconButton(//icono con botón
               icon: Icon(Icons.delete),//icono
-              onPressed: () => _deleteFav(context, _favs[position], position),//evento press eliminar
+              //evento press eliminar
+              onPressed: () => _deleteFav(context, _favs[position], position),
             ),
           ],
         ),
@@ -266,8 +286,11 @@ class AdminPageState extends State<AdminPage>{
   }
 
   void _deleteFav(BuildContext context, Fav fav, int position) async {
-    dbHelper.deleteFav(fav.id).then((notes) {
+    //eliminamos de la base de datos interna
+    dbHelper.deleteFav(fav.id).then((fav) {
+      //al terminar seteamos el estado
       setState(() {
+        //eliminando el elemento de la lista
         _favs.removeAt(position);
       });
     });

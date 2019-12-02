@@ -1,11 +1,13 @@
 class Fav {
-  int _id;
-  String _name;
-  String _age;
-  String _image;
+  int _id;//id interno
+  String _name;//nombre
+  String _age;//edad
+  String _image;//
  
+  //constructor
   Fav(this._name, this._age, this._image);
 
+  //mapeamos los elementos dinamicamente
   Fav.map(dynamic obj) {
     this._id = obj['id'];
     this._name = obj['name'];
@@ -13,6 +15,7 @@ class Fav {
     this._image = obj['image'];
   }
 
+  //getters
   int get id => _id;
   String get name => _name;
   String get age => _age;
@@ -20,8 +23,8 @@ class Fav {
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
-    if (_id != null) {
-      map['id'] = _id;
+    if (_id != null) {//si el id no viene nulo
+      map['id'] = _id;//lo asignamos
     }
     map['name'] = _name;
     map['age'] = _age;
@@ -29,7 +32,7 @@ class Fav {
 
     return map;
   }
- 
+
   Fav.fromMap(Map<String, dynamic> map) {
     this._id = map['id'];
     this._name = map['name'];

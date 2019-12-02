@@ -5,36 +5,47 @@ import 'package:path/path.dart';
 import 'package:lab_02/models_sqlite/Fav.dart';
  
 class FavHelper {
+  //creamos una clase singleton
   static final FavHelper _instance = new FavHelper.internal();
- 
-  factory FavHelper() => _instance;
- 
-  final String tableFav = 'favTable';
-  final String columnId = 'id';
-  final String columnName = 'name';
-  final String columnAge = 'age';
-  final String columnImage = 'image';
- 
-  static Database _db;
- 
   FavHelper.internal();
  
-  Future<Database> get db async {
-    if (_db != null) {
-      return _db;
-    }
-    _db = await initDb();
+  //creamos una instancia de esta clase
+  factory FavHelper() => _instance;
  
+  //declaramos el nombre de la tabla
+  final String tableFav = 'favTable';
+  final String columnId = 'id';//y sus columnas id
+  final String columnName = 'name';// nombre
+  final String columnAge = 'age';//edad
+  final String columnImage = 'image';//imagen
+ 
+  //declaramos la variable Database
+  static Database _db;
+ 
+  //obtenemos la base de datos
+  Future<Database> get db async {
+    //si ya fue creada
+    if (_db != null) {
+      return _db;//retornamos la db existente
+    }
+    //si no, creamos una nueva con la funcion initDb
+    _db = await initDb();
+    //y la retornamos
     return _db;
   }
  
+  //iniciar base de datos
   initDb() async {
+    //obtenemos el path base
     String databasesPath = await getDatabasesPath();
+    //obtenemos el path del archivo favs.db
     String path = join(databasesPath, 'favs.db');
  
-    //await deleteDatabase(path); // just for testing
+    //await deleteDatabase(path); //solo para pruebas
  
+    //abrimos la base de datos
     var db = await openDatabase(path, version: 1, onCreate: _onCreate);
+    //retornamos la base de datos
     return db;
   }
  
@@ -90,7 +101,8 @@ class FavHelper {
     var dbClient = await db;
     return await dbClient.update(tableFav, fav.toMap(), where: "$columnId = ?", whereArgs: [fav.id]);
     // return await dbClient.rawUpdate(
-    // 'UPDATE $tableFav SET $columnName = \'${fav.name}\', $columnAge = \'${fav.age}\' WHERE $columnId = ${fav.id}');
+    // 'UPDATE $tableFav SET $columnName = \'${fav.name}\', $columnAge = \'${fav.age}\' 
+    // WHERE $columnId = ${fav.id}');
   }
  
   Future close() async {

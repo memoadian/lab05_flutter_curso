@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;//http
 import 'package:lab_02/models_sqlite/Fav.dart';
 import 'package:lab_02/models_sqlite/FavHelper.dart';
 
+import 'package:toast/toast.dart';
+
 class PetsList extends StatefulWidget{
   @override
   createState() => PetsListState();
@@ -76,10 +78,12 @@ class PetsListState extends State<PetsList> {
               style: TextStyle(fontSize: 18)//estilo del texto
             ),
           ),
-          Container(
-            child: Row(
+          Container(//contenedor de botones
+            child: Row(//row para alinear botones en fila
+              //esta propiedad permite que los botones se
+              //distribuyan equitativamente
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
+              children: <Widget>[//usamos un array de botones
                 FlatButton.icon(//instancia del icono de navegación
                   icon: Icon(Icons.remove_red_eye,//definimos nombre del icono
                     size: 18.0,//tamaño
@@ -112,9 +116,16 @@ class PetsListState extends State<PetsList> {
     );
   }
 
+  //insertar nuevo fav
   void _insert(String name, int age, String image) async {
+    //llamamos el dbHelper para guardar el registro
     dbHelper.saveFav(new Fav(name, age.toString(), image)).then((_) {
-      //Toast.show("Pet agregado a favoritos", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+      //cuando se termina lanzamos el toast
+      Toast.show(
+        'Amigo agregado a favoritos', 
+        context,
+        duration: Toast.LENGTH_SHORT,
+        gravity:  Toast.BOTTOM);
     });
   }
 }
