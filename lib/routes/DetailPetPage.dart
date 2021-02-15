@@ -31,59 +31,61 @@ class DetailPetPage extends StatelessWidget {
         title: Text('Ver Amigo'),//titulo appbar
       ),
       //Future Builder para cachar la respuesta en un snapshot
-      body: FutureBuilder<Pet>(
-        //usamos la propiedad future para llamar la función fetchPet
-        future: fetchPet(),
-        //usamos un builder para pasar el parámetro snapshot
-        builder: (context, snapshot){
-          //si existen datos en el snapshot
-          if (snapshot.hasData) {
-            return Container(
-              child: Card(//creamos una card
-                margin: EdgeInsets.all(10.0),//margen de 10
-                child: Column(//creamos una columna para colocar varios hijos
-                  mainAxisSize: MainAxisSize.min,//definimos ualtura ajustable a contenido
-                  children: <Widget>[//array
-                    Container (//contenedor de imagen
-                      padding: EdgeInsets.all(10.0),//padding
-                      //imagen de servidor snapshot data image
-                      child: Image.network(snapshot.data.image),
-                    ),
-                    Container (//contenedor de texto
-                      padding: EdgeInsets.all(10.0),//padding
-                      child: Text(snapshot.data.name,//título snapshot
-                        style: TextStyle(fontSize: 18)//estilo del texto
+      body: SingleChildScrollView(
+        child: FutureBuilder<Pet>(
+          //usamos la propiedad future para llamar la función fetchPet
+          future: fetchPet(),
+          //usamos un builder para pasar el parámetro snapshot
+          builder: (context, snapshot){
+            //si existen datos en el snapshot
+            if (snapshot.hasData) {
+              return Container(
+                child: Card(//creamos una card
+                  margin: EdgeInsets.all(10.0),//margen de 10
+                  child: Column(//creamos una columna para colocar varios hijos
+                    mainAxisSize: MainAxisSize.min,//definimos ualtura ajustable a contenido
+                    children: <Widget>[//array
+                      Container (//contenedor de imagen
+                        padding: EdgeInsets.all(10.0),//padding
+                        //imagen de servidor snapshot data image
+                        child: Image.network(snapshot.data.image),
                       ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(10.0),
-                      child: Text(//descripción snapshot descripción
-                        snapshot.data.desc, textAlign: TextAlign.center,
+                      Container (//contenedor de texto
+                        padding: EdgeInsets.all(10.0),//padding
+                        child: Text(snapshot.data.name,//título snapshot
+                          style: TextStyle(fontSize: 18)//estilo del texto
+                        ),
                       ),
-                    ),
-                  ],
+                      Container(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(//descripción snapshot descripción
+                          snapshot.data.desc, textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+              );
+            //si hay un error en el snapshot
+            } else if (snapshot.hasError) {
+              // lo mostramos en la vista
+              return Text('${snapshot.error}');
+            }
+            //por defecto mostramos un progress en lo que responde el servidor
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(20.0),
+                    child: Text('Cargando'),
+                  ),
+                  CircularProgressIndicator()
+                ],
               ),
             );
-          //si hay un error en el snapshot
-          } else if (snapshot.hasError) {
-            // lo mostramos en la vista
-            return Text('${snapshot.error}');
           }
-          //por defecto mostramos un progress en lo que responde el servidor
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(20.0),
-                  child: Text('Cargando'),
-                ),
-                CircularProgressIndicator()
-              ],
-            ),
-          );
-        }
+        ),
       ),
     );
   }
