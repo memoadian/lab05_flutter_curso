@@ -1,5 +1,9 @@
-name: lab_02
-description: A new Flutter project.
+name: lab_05_flutter_curso
+description: application apipets
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -14,28 +18,28 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
-  http: ^0.12.0+2
-  image_picker: 0.6.1+4
-  progress_dialog: ^1.2.0
-  shared_preferences: ^0.5.3+5
-  sqflite: 1.1.7+3
-  path: ^1.6.4
-  path_provider: 1.4.5
+  cupertino_icons: ^1.0.0
+  http: 0.12.2
+  image_picker: 0.6.7+22
+  progress_dialog: 1.2.4
+  shared_preferences: ^0.5.12+4
+  sqflite: 1.3.2+3
+  path: 1.8.0-nullsafety.1
+  path_provider: 1.6.27
   toast: ^0.1.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -50,7 +54,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/logo_flutter.png
+    - assets/logo_flutter.png
+    - assets/drawer_bg.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

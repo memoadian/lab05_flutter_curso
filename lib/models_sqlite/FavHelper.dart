@@ -2,7 +2,7 @@ import 'dart:async';
  
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:lab_02/models_sqlite/Fav.dart';
+import 'package:lab_05_flutter_curso/models_sqlite/Fav.dart';
  
 class FavHelper {
   //creamos una clase singleton

@@ -68,6 +68,19 @@ class MyAppState extends State<MyApp> {
           drawer: Drawer(
             child: ListView(//lista de elementos
               children: <Widget>[//array
+                UserAccountsDrawerHeader(
+                  accountName: Text("Guillermo Canales"),
+                  accountEmail: Text("memoadian@gmail.com"),
+                  currentAccountPicture: CircleAvatar(
+                    backgroundImage: AssetImage('assets/logo_flutter.png'),
+                  ),
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage('assets/drawer_bg.jpg')
+                      )
+                  ),
+                ),
                 ListTile(//elemento de la lista
                   leading: Icon(Icons.home),//icono, puede ser una imagen
                   title: Text('Inicio'),//texto del título
