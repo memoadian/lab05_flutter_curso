@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'routes/HomePage.dart';
-import 'routes/AdminPage.dart';
+import 'routes/home_pet_page.dart';
+import 'routes/admin_pet_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(MyApp());
@@ -40,6 +40,7 @@ class MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Save A Friend",
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         //obtenemos el color seteado de shared
         primarySwatch: (_isOrange) ? Colors.deepOrange : Colors.blue,

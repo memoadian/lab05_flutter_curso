@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lab_05_flutter_curso/models_api/Pet.dart';
+import 'package:lab_05_flutter_curso/models_api/pet.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http; //http
 

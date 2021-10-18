@@ -5,11 +5,7 @@ class Fav {
   late String _image; //
 
   //constructor
-  Fav(
-    this._name,
-    this._age,
-    this._image,
-  );
+  Fav(this._name, this._age, this._image);
 
   //mapeamos los elementos dinamicamente
   Fav.map(dynamic obj) {

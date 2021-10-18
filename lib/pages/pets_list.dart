@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart'; //material
-import 'package:lab_05_flutter_curso/models_api/Pet.dart'; //clase Pet
-import 'package:lab_05_flutter_curso/routes/DetailPetPage.dart'; //clase Detail Pet
+import 'package:lab_05_flutter_curso/models_api/pet.dart'; //clase Pet
+import 'package:lab_05_flutter_curso/routes/detail_pet_page.dart'; //clase Detail Pet
 
 import 'dart:convert'; //dependencia para json
 import 'package:http/http.dart' as http; //http
 
-import 'package:lab_05_flutter_curso/models_sqlite/Fav.dart';
-import 'package:lab_05_flutter_curso/models_sqlite/FavHelper.dart';
+import 'package:lab_05_flutter_curso/models_sqlite/fav.dart';
+import 'package:lab_05_flutter_curso/models_sqlite/fav_helper.dart';
 
 import 'package:toast/toast.dart';
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:lab_05_flutter_curso/routes/AddPetPage.dart';
-import 'package:lab_05_flutter_curso/routes/EditPetPage.dart'; //importamos Añadir amigo
-import 'package:lab_05_flutter_curso/models_api/Pet.dart'; //importamos el mdoelo Pet.dart+
+import 'package:lab_05_flutter_curso/routes/add_pet_page.dart';
+import 'package:lab_05_flutter_curso/routes/edit_pet_page.dart'; //importamos Añadir amigo
+import 'package:lab_05_flutter_curso/models_api/pet.dart'; //importamos el mdoelo Pet.dart+
 import 'dart:convert'; //json
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:lab_05_flutter_curso/models_sqlite/Fav.dart';
-import 'package:lab_05_flutter_curso/models_sqlite/FavHelper.dart';
+import 'package:lab_05_flutter_curso/models_sqlite/fav.dart';
+import 'package:lab_05_flutter_curso/models_sqlite/fav_helper.dart';
 
 class AdminPage extends StatefulWidget {
   @override

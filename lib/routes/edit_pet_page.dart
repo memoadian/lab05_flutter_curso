@@ -6,26 +6,21 @@ import 'package:image_picker/image_picker.dart';
 
 import 'dart:convert'; //para usar json
 import 'package:http/http.dart' as http; //http
-import 'package:lab_05_flutter_curso/models_api/Pet.dart'; //model Pet
+import 'package:lab_05_flutter_curso/models_api/pet.dart'; //model Pet
 import 'package:lab_05_flutter_curso/main.dart'; //vista principal
 
-class AddPetPage extends StatelessWidget {
+class EditPetPage extends StatefulWidget {
+  final int? id; //variable id
+
+  EditPetPage(this.id); //constructor
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Añadir Amigo"),
-        ),
-        body: FormAddPet());
-  }
+  createState() => EditPetPageState(); //estado
 }
 
-class FormAddPet extends StatefulWidget {
-  @override
-  createState() => FormAddPetState();
-}
-
-class FormAddPetState extends State<FormAddPet> {
+class EditPetPageState extends State<EditPetPage> {
+  //variable _pet para guardar datos del server
+  Pet _pet = Pet();
   //declaramos una variable donde guardaremos el item seleccionado
   String _selectedType = 'Por favor escoge';
   //variable para guardar el Id el item
@@ -34,9 +29,7 @@ class FormAddPetState extends State<FormAddPet> {
   bool _rescue = false;
   //image file for picker image
   XFile? _imageFile;
-  //instancia de image picker
   ImagePicker _picker = ImagePicker();
-  //variable para guardar el error
   dynamic _pickImageError;
 
   //global key para validar
@@ -46,6 +39,8 @@ class FormAddPetState extends State<FormAddPet> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController ageController = TextEditingController();
+  String? typeId; //type id para el dropdown
+  int? statusId; //statusId (rescatado o no)
 
   //Lista clave valor para los items del dropdown
   List<PetKeyValue> _data = [
@@ -54,15 +49,67 @@ class FormAddPetState extends State<FormAddPet> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _getEditPet();
+  }
+
+  Future<Null> _getEditPet() async {
+    //consumimos el webservice pasando el parámetro id
+    final response = await http
+        .get(Uri.parse("http://pets.memoadian.com/api/pets/${widget.id}"));
+
+    //si la respuesta es correcta responderá con 200
+    if (response.statusCode == 200) {
+      //guardamos la respuesta en una variable en json
+      final result = json.decode(response.body);
+      setState(() {
+        _pet = Pet.fromJson(result); //mapeamos el resultado en el modelo
+        titleController.text =
+            _pet.name; //asignamos el nombre al titleController
+        descriptionController.text = _pet.desc; //descriptionController
+        ageController.text = _pet.age.toString(); //ageController en String
+        typeId = _pet.typeId.toString(); //typeId en String
+        statusId = _pet.statusId; //statusId en integer
+        //estas variables se setean por si el usuario no activa
+        //la funcion on changed del form
+        _rescue = (statusId == 2) ? true : false; //condicional rescatado
+        _selectedTypeId = typeId; //el tipo seleccionado
+      });
+    } else {
+      throw Exception('Fallo al cargar información del servidor');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      //creamos una vista scrolleable
-      child: Form(
-        //añadimos un form
-        key: _formKey, //añadimos la llave a nuestro form
-        //añadimos autovalidate para hacer dinámica la validación de los inputs
-        autovalidateMode: AutovalidateMode.always,
-        child: _form(), //llamamos desde aqui la funcion que construye el form
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Editar Amigo'),
+      ),
+      body: SingleChildScrollView(
+        //creamos una vista scrolleable
+        child: Form(
+            //añadimos un form
+            key: _formKey, //añadimos la llave a nuestro form
+            //añadimos autovalidate para hacer dinámica la validación de los inputs
+            autovalidateMode: AutovalidateMode.always,
+            child: (_pet.name != null) //si pet tiene datos
+                ? _form() //mostramos el form
+                : progress() //si no, cargamos la función progress
+            ),
+      ),
+    );
+  }
+
+  Widget progress() {
+    return SizedBox(
+      //la usamos para determinar las medidas
+      width: double.infinity, //full width
+      height: 300.0, //height 300
+      child: Center(
+        //centramos
+        child: CircularProgressIndicator(), //progress circular
       ),
     );
   }
@@ -79,13 +126,13 @@ class FormAddPetState extends State<FormAddPet> {
             //text form field para validar
             controller: titleController, //para obtener el contenido del input
             decoration: InputDecoration(
-              icon: Icon(Icons.pets), //añadimos un icono
-              hintText: 'Nombre', //placeholder
-              labelText: 'Nombre:', //label
-            ),
+                icon: Icon(Icons.pets), //añadimos un icono
+                hintText: 'Nombre', //placeholder
+                labelText: 'Nombre:' //label
+                ),
             maxLength: 32,
             //usamos una función flecha para llamar la función validar
-            validator: (String? value) =>
+            validator: (value) =>
                 _validReq("$value", 'Coloca un nombre a tu amigo'),
           ),
           TextFormField(
@@ -100,8 +147,7 @@ class FormAddPetState extends State<FormAddPet> {
               labelText: 'Descripción:', //label
             ),
             maxLength: 512,
-            validator: (String? value) =>
-                _validReq("$value", 'Agrega una descripción'),
+            validator: (value) => _validReq("$value", 'Agrega una descripción'),
           ),
           TextFormField(
             //text form field para validar
@@ -123,6 +169,12 @@ class FormAddPetState extends State<FormAddPet> {
             child: DropdownButton<PetKeyValue>(
               //Declaramos el widget dropdown
               hint: Text(_selectedType), //texto placeholder
+              //firstWhere devuelve la primera coincidencia de un array, en este caso buscamos
+              //el elemento cuyo value sea igual al typeId de los datos y si no hay devolverá null
+              value: _data.firstWhere(
+                (data) => data.value == typeId,
+                orElse: () => PetKeyValue(key: 'Perrito', value: '1'),
+              ),
               isExpanded: true, //expandimos el elemento al 100%
               items: _data.map((data) {
                 //mapeamos el array de tipos
@@ -156,6 +208,7 @@ class FormAddPetState extends State<FormAddPet> {
               });
             },
           ),
+          //pasamos el contexto y el snapshot
           _chooseImage(context),
           SizedBox(
             //sized box permite manejar dimensiones de sus hijos
@@ -176,13 +229,12 @@ class FormAddPetState extends State<FormAddPet> {
                   //colocamos un row para contener el label y ocupar
                   //todo el ancho disponible del botón
                   Row(
-                    //centramos el texto
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      //array
-                      Text('Enviar') //texto, aqui centrar no sirve
-                    ],
-                  ),
+                      //centramos el texto
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        //array
+                        Text('Enviar') //texto, aqui centrar no sirve
+                      ]),
                 ],
               ),
             ),
@@ -192,7 +244,7 @@ class FormAddPetState extends State<FormAddPet> {
     );
   }
 
-  //función escoger imagen
+  //función escoger imagen con parámetro context y snapshot
   Widget _chooseImage(BuildContext context) {
     return Center(
       //centrareamos la imagen
@@ -200,61 +252,67 @@ class FormAddPetState extends State<FormAddPet> {
         //columna para usar array
         children: <Widget>[
           //array
-          _imageDefault(), //llamamos la funcion imagen por defecto
+          //llamamos la funcion imagen por defecto
+          //y pasamos de nuevo el snapshot
+          _imageDefault(),
           ElevatedButton(
               //botón para seleccionar imagen
               child: Text('Escoger Imágen'), //Texto del botón
               //evento press que llama la función para seleccionar
               //imagen pasando la fuente gallery o camera
-              onPressed: () => _pickImage(ImageSource.camera))
+              onPressed: () => _pickImage(ImageSource.gallery))
         ],
       ),
     );
   }
 
   _pickImage(ImageSource source) async {
-    //encerramos en un try catch
     try {
       final pickedFile = await _picker.pickImage(
         source: source,
-      ); //seteamos pickedFile
+      );
       setState(() {
-        //añadimos el estado para hacer un rebuild de la vista
         _imageFile = pickedFile as XFile;
       });
     } catch (e) {
       setState(() {
         _pickImageError = e;
       });
-      print(_pickImageError);
     }
   }
 
   Widget _imageDefault() {
     //widget imagen por defecto
-    return FutureBuilder<File>(//retornamos un future builder de la imagen
-        builder: (context, snapshot) {
-      //snapshot de la imagen seleccionada
-      return Container(
-        //contenedor
-        child: _imageFile == null //si la imagen es nula
-            ? Text('Seleccionar imagen') //colocamos un texto
-            //si no es nula retornamos la imagen seleccionada
-            : Image.file(
-                File(_imageFile!.path),
-                width: 300,
-                height: 150,
-              ),
-      );
-    });
+    if (_pet.image != null) {
+      //si la propiedad image no es nula
+      //retornamos un future builder de la imagen al ser seleccionada
+      return FutureBuilder<File>(builder: (context, snapshot) {
+        //snapshot de la imagen seleccionada
+        return Container(
+          //contenedor
+          child: _imageFile == null //si la imagen es nula
+              //colocamos la imagen del server
+              ? Image.network(_pet.image)
+              //si no es nula retornamos la imagen seleccionada
+              : Image.file(
+                  File(_imageFile!.path),
+                  width: 300,
+                  height: 150,
+                ),
+        );
+      });
+    }
+
+    //por defecto retornamos un progress circular
+    return CircularProgressIndicator();
   }
 
   void _validateForm() {
-    //mostramos el dialog
-    showLoaderDialog(context);
-
     //si todos los inputs son válidos
     if (_formKey.currentState!.validate()) {
+      //iniciamos la configuración del progress dialog
+      showLoaderDialog(context);
+
       Pet newPet = Pet(
         //creamos un nuevo Pet
         name: titleController.text, //nombre del title controller
@@ -263,15 +321,14 @@ class FormAddPetState extends State<FormAddPet> {
         //si no obtenemos el valor numérico del String
         age: (ageController.text != '') ? int.parse(ageController.text) : 0,
         image: _getImage(), //obtenemos la imagen de la función getImage
-        //obtenemos el valor numérico del tipo
-        typeId: int.parse("$_selectedTypeId"),
+        typeId: int.parse(
+            "$_selectedTypeId"), //obtenemos el valor numérico del tipo
         statusId: (_rescue) ? 2 : 1, //si el PetAmigo es rescatado 2 - si no 1
       );
 
-      //pasámos el endpoint a la función createPost y el modelo
-      createPost('http://pets.memoadian.com/api/pets', newPet.toMap());
-    } else {
-      Navigator.pop(context);
+      //pasámos el endpoint a la función updatePost y el modelo
+      updatePost(
+          'http://pets.memoadian.com/api/pets/$widget.id', newPet.toMap());
     }
   }
 
@@ -307,10 +364,9 @@ class FormAddPetState extends State<FormAddPet> {
   }
 
   //create post con dos parámetros (endpoint y maps de datos)
-  void createPost(String url, Map body) async {
-    var uri = Uri.parse(url);
+  void updatePost(String url, Map body) async {
     //asincrono
-    return http.post(uri, body: body) //hacemos el request post
+    return http.put(Uri.parse(url), body: body) //hacemos el request put
         .then((http.Response response) {
       //cuando responde
       final int statusCode =
@@ -318,7 +374,6 @@ class FormAddPetState extends State<FormAddPet> {
 
       //si el status es diferente de los considerados correctos
       if (statusCode < 200 || statusCode > 400) {
-        Navigator.pop(context); //cerramos el progress dialog
         //creamos una excepción
         throw new Exception("Error while fetching data" + response.body);
       }
